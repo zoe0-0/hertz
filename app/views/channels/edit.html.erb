@@ -1,0 +1,53 @@
+<!-- <% if Rails.env.development? %>
+  <h1>Channels#edit</h1>
+  <p>Find me in app/views/channels/edit.html.erb</p>
+<% end %> -->
+
+
+
+<div class="row col-12 justify-content-between">
+
+
+<div class="col-md-4 left-box align-self-center text-cente mx-auto" >
+
+<!-- channel 정보 수정 -->
+<p>* 내 채널 정보 수정</p>
+<%= simple_form_for @channel, class: "border border-light" do |f| %>
+     <%= f.number_field :frequency, disabled: 'disabled', class: "form-control mb-3" %>
+     <%= f.text_field :title, class: "form-control mb-3" %>
+     <%= f.button :submit, id: "button", class: "btn btn-outline-warning btn-rounded btn-block z-depth-0 my-2 waves-effect mb-5"  %>
+<% end %>
+<h6 class="text-center"><i class="fa fa-sign-in-alt align-baseline fa-sm"></i>&nbsp;&nbsp;<%= link_to '내 채널로 이동', "/#{@channel.frequency}" %></h6>
+
+
+</div>
+
+
+
+  <div class="pre-scrollable col-md-5 align-self-center mx-auto" style="height:500px">
+    <h4 style="font-family: 'Open Sans Condensed', sans-serif;" class="text-center mb-2">
+    <i class="far fa-calendar-check align-baseline fa-xs "></i>&nbsp;
+    My Channel Diary
+    </h4>
+    <% @diaries.each_with_index do |diary, index| %>
+    <div class="mb-3 mx-auto " style=" /*background: rgba( 255, 255, 255, 0.5);font-family: 'Gaegu', cursive; */  ">
+      <div class="card-body" id= "diary-card" style="font-family: 'Gaegu', cursive;">
+        <h5 class="card-title text-left" style="font-family: 'Sunflower', sans-serif;" id="index">[ <%= index_th(@diaries.size-index)%> ]</h5>
+        <h5 class="card-subtitle"><%= diary.title %></h5>
+        <p class="card-text"><%= diary.content %></p>
+        <p><span><i class="fa fa-headphones fa-sm align-baseline"></i>&nbsp;&nbsp;최대 청취자수: </span><%= diary.max_audience %></p>
+        <p>
+          방송시작: <%= diary.created_at.strftime("%Y-%m-%d %H:%M") %>
+        </p>
+        <p>
+          방송종료: <%= diary.finished_at.strftime("%Y-%m-%d %H:%M") %>
+        </p>
+      </div>
+    </div>
+    <% end %>
+  </div>
+
+
+
+
+</div>

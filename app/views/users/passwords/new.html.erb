@@ -1,0 +1,18 @@
+<div style="width: 400px;" class = "mx-auto" >
+<h3 class = "text-center mt-5 mb-3">Forget your password?</h3>
+
+
+<%= simple_form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post }) do |f| %>
+  <%= f.error_notification %>
+
+  <div class="form-inputs">
+    <%= f.input :email, required: true, autofocus: true %>
+  </div>
+
+  <div class="form-actions text-center  mt-4 mb-3">
+    <%= f.button :submit, "Send me reset password instructions", class: "btn btn-primary w-100"  %>
+  </div>
+<% end %>
+
+<%= render "users/shared/links" %>
+</div?

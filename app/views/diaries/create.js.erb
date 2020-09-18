@@ -1,0 +1,4 @@
+<% if @channel.onair == 1 %>
+$('.onair-link > form').replaceWith(
+  `<a rel="nofollow" href="/diaries/<%=current_user.channel.diaries.last.id%>/edit", class= "btn btn-outline-warning btn-rounded btn-block z-depth-0 my-2 waves-effect">방송종료</a>`)
+<% end %>

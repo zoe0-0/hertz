@@ -1,0 +1,23 @@
+<div class="align-self-center text-center mx-auto" style="width:80%">
+
+<h3 style="font-family: 'Open Sans Condensed', sans-serif;">
+<i class="far fa-calendar-check align-baseline fa-xs "></i>&nbsp;
+TIMETABLE
+</h3>
+<br/>
+
+<%= week_calendar number_of_weeks: 1 do |date| %>
+    <p><%= date.strftime("%m") %>/<%= date.strftime("%d") %></p>
+    <% @timetables.where("start BETWEEN ? AND ?", date.at_beginning_of_day, date.at_end_of_day).each do |t| %>
+        <div id="story-<%=t.id%>" class="channel-<%=t.channel.id%>">
+            <a href="/<%=t.channel.frequency%>"><%= t.channel.title%><br><%= t.start.strftime("%R") %> ~ <%= t.end.strftime("%R") %></a>
+        </div>
+        <hr>
+    <% end %>
+    <%=@start_date%>
+<% end %>
+
+<%= link_to "방송 일정 등록", new_timetable_path, class: "btn btn-outline-warning btn-rounded btn-block z-depth-0 my-4 waves-effect mx-auto", style:"width: 30%" %>
+
+
+</div>

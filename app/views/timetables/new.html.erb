@@ -1,0 +1,13 @@
+<div class="align-self-center text-center mx-auto col-4">
+  <p>
+    * 방송 시간을 등록하세요 
+  </p>
+  <br/>
+
+
+<%= simple_form_for @timetable, method: "POST", url: {action: "create"}, class: "text-center border border-light p-5" do |f| %>
+  시작시간 <%= f.datetime_local_field :start, class: "form-control" %><br/>
+  종료시간 <%= f.datetime_local_field :end, class: "form-control" %><br/>
+  <%= f.submit "create", class: "btn btn-outline-warning btn-rounded btn-block z-depth-0 my-2 waves-effect" %>
+<% end %>
+</div>

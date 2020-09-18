@@ -1,0 +1,584 @@
+<div class="container  align-self-center">
+<h1></h1>
+
+
+<meta charset="utf-8">
+<title>Hertz</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+<link rel="shortcut icon" href="/demos/logo.png">
+<link rel="stylesheet" href="/demos/stylesheet.css">
+
+<section class="make-center">
+
+     <div class="row col-12 justify-content-between mx-auto">
+
+
+        <% if !current_user.nil? and !@current_channel.nil? and  @current_channel.user_id == current_user.id %>
+
+        <div class="col-md-5 onair-link align-self-center">
+          <h5 class="text-center" style="font-family: 'Sunflower', sans-serif;"><span><%= @channel_frequency %></span> MHz&nbsp;&nbsp;[<%= @channel_title%>]</h5>
+          <br/>
+
+        <div class="make-center text-center mb-3" id="broadcast-viewers-counter"></div>
+        <audio id="audio-preview" class="mb-5" style="width:100%" controls loop></audio>
+
+
+                <% if @current_channel.onair == 1 %>  <!-- 이미 방송중. 방송종료 버튼 -->
+                    <%= link_to '방송종료', "/diaries/#{current_user.channel.diaries.last.id}/edit", class: "btn btn-outline-warning btn-rounded btn-block z-depth-0 my-2 waves-effect mt-10" %>
+                <% else %>  <!-- 방송종료 상태. 방송하기 버튼 -->
+
+                    <%= simple_form_for @diary, remote: true, class: "border border-light" do |f| %>
+                        <%= f.text_field :title,  required: true, class: "form-control mb-3", placeholder: "오늘의 방송 주제" %>
+                        <%= f.text_field :content, required: true, class: "form-control mb-3",  placeholder: "오늘의 방송 내용"%>
+                    <%= f.submit "방송 시작하기", id: 'open-or-join', class: "btn btn-outline-warning btn-rounded btn-block z-depth-0 my-2 waves-effect" %>
+                    <% end %>
+
+                <% end %>
+
+
+        </div> <!--  onair-link 왼쪽 상자 종료  -->
+
+
+
+
+        <!-- 사연 리스트 -->
+        <div id="story-box" class="pre-scrollable col-md-6 align-self-center" style="height:500px">
+                <!-- <h4><i class="far fa-envelope align-center fa-sm"></i>&nbsp;&nbsp;사연함</h4><br/> -->
+
+                <div id = "stories">
+                    <% @stories.reverse.each do |story| %>
+                        <div class = "story">
+                        <h6>보내는 사람: <%= story.user.email %></h6>
+                        <h6><%= story.content %></h6>
+                        <p><%= story.created_at.strftime("%Y-%m-%d %H:%M") %></p>
+                        <hr/>
+                        </div>
+                    <% end %>
+                </div>
+
+
+        </div>  <!-- 사연 리스트 종료 -->
+
+
+
+
+                        <%else%>   <!--클라이언트로 입장 -->
+                        <div class="col-md-10 onair-link align-self-center mx-auto">
+                          <h5 class="text-center mb-4" style="font-family: 'Sunflower', sans-serif;"><span><%= @channel_frequency %></span> MHz&nbsp;&nbsp;[<%= @channel_title%>] _
+
+                          <% if @current_channel.onair == 1 %>  <!-- 방송중 -->
+                              <span>방송중 입니다</span>
+                          <% else %>  <!-- 방송종료 상태 -->
+                              <span>방송준비중 입니다</span>
+                          <% end %>
+                         </h5>
+
+                        <div class="make-center text-center mb-3" id="broadcast-viewers-counter"></div>
+                        <audio id="audio-preview" class="mb-3 mt-3" style="width:100%" controls loop></audio>
+
+
+
+                             <!-- 사연보내기 -->
+                            <% if user_signed_in? %>
+                                <!-- postcard > 0 인 경우에만 -->
+                            <button type="button" data-toggle="modal" data-target="#myModal" class= "btn btn-outline-warning btn-rounded btn-block z-depth-0 my-2 waves-effect mt-20 mx-auto" style="width:50%">사연보내기</button>
+                             <div class="modal fade" id="myModal" role="dialog">
+                              <div class="modal-dialog">
+                                        <!-- Modal content-->
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                                <button type="button" class="close btn_close" data-dismiss="modal">&times;</button>
+                                                <!-- <h4 class="modal-title">Modal Header</h4> -->
+                                            </div>
+                                            <div class="modal-body">
+                                                <% @story = Story.new %>
+                                                <%= simple_form_for @story, remote: true do |f| %>
+                                                    <%= f.text_area :content, maxlength: 300, rows: 15, cols: 50, class: "story-content" %>
+                                                    <%= f.hidden_field :channel_id, :value => @current_channel.id %>
+                                            </div>
+                                            <div class="modal-footer">
+                                                    <%= f.submit "사연보내기", class: "btn btn-outline-warning btn-rounded btn-block z-depth-0 my-2 waves-effect mt-13 btn_close"%>
+                                                <% end %>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% end %> <!-- 사연보내기 end -->
+
+                        <% end %>
+
+
+    </div>
+
+
+    <div id="room-urls" style="text-align: center;display: none;background: #F1EDED;margin: 15px -10px;border: 1px solid rgb(189, 189, 189);border-left: 0;border-right: 0;"></div>
+
+
+</section>
+</div>
+
+<!-- 사연보내기 script -->
+<script>
+  $('.btn_close').on('click', function(){
+    setTimeout(function(){
+      $('#story_content').val("");
+      $('#myModal').modal('hide');
+    }, 1000);
+  });
+</script>
+
+
+    <!-- <script src="https://cdn.webrtc-experiment.com/RecordRTC.js"></script> -->
+    <script>
+    // recording is disabled because it is resulting for browser-crash
+    // if you enable below line, please also uncomment above "RecordRTC.js"
+    var enableRecordings = false;
+
+    var connection = new RTCMultiConnection();
+
+    // its mandatory in v3
+    connection.enableScalableBroadcast = true;
+
+    // each relaying-user should serve only 1 users
+    connection.maxRelayLimitPerUser = 1;
+
+    // we don't need to keep room-opened
+    // scalable-broadcast.js will handle stuff itself.
+    connection.autoCloseEntireSession = true;
+
+    // by default, socket.io server is assumed to be deployed on your own URL
+    //connection.socketURL = '/';
+
+    // comment-out below line if you do not have your own socket.io server
+    connection.socketURL = 'https://rtcmulticonnection.herokuapp.com:443/';
+
+    connection.socketMessageEvent = 'scalable-media-broadcast-demo';
+
+    // document.getElementById('broadcast-id').value = connection.userid;
+
+    // user need to connect server, so that others can reach him.
+    connection.connectSocket(function(socket) {
+    socket.on('logs', function(log) {
+        // document.querySelector('h1').innerHTML = log.replace(/</g, '----').replace(/>/g, '___').replace(/----/g, '(<span style="color:red;">').replace(/___/g, '</span>)');
+
+
+    });
+
+    // this event is emitted when a broadcast is already created.
+    socket.on('join-broadcaster', function(hintsToJoinBroadcast) {
+        console.log('join-broadcaster', hintsToJoinBroadcast);
+
+        connection.session = hintsToJoinBroadcast.typeOfStreams;
+        connection.sdpConstraints.mandatory = {
+            OfferToReceiveVideo: !!connection.session.video,
+            OfferToReceiveAudio: !!connection.session.audio
+        };
+        connection.broadcastId = hintsToJoinBroadcast.broadcastId;
+        connection.join(hintsToJoinBroadcast.userid);
+    });
+
+    socket.on('rejoin-broadcast', function(broadcastId) {
+        console.log('rejoin-broadcast', broadcastId);
+
+        connection.attachStreams = [];
+        socket.emit('check-broadcast-presence', broadcastId, function(isBroadcastExists) {
+            if (!isBroadcastExists) {
+                // the first person (i.e. real-broadcaster) MUST set his user-id
+                connection.userid = broadcastId;
+            }
+
+            socket.emit('join-broadcast', {
+                broadcastId: broadcastId,
+                userid: connection.userid,
+                typeOfStreams: connection.session
+            });
+        });
+    });
+
+    socket.on('broadcast-stopped', function(broadcastId) {
+        // alert('Broadcast has been stopped.');
+        // location.reload();
+        console.error('broadcast-stopped', broadcastId);
+        alert('This broadcast has been stopped.');
+    });
+
+    // this event is emitted when a broadcast is absent.
+    socket.on('start-broadcasting', function(typeOfStreams) {
+        console.log('start-broadcasting', typeOfStreams);
+
+        // host i.e. sender should always use this!
+        connection.sdpConstraints.mandatory = {
+            OfferToReceiveVideo: false,
+            OfferToReceiveAudio: false
+        };
+        connection.session = typeOfStreams;
+
+        // "open" method here will capture media-stream
+        // we can skip this function always; it is totally optional here.
+        // we can use "connection.getUserMediaHandler" instead
+        connection.open(connection.userid, function() {
+            // showRoomURL(connection.sessionid);
+        });
+    });
+    });
+
+    window.onbeforeunload = function() {
+    // Firefox is ugly.
+    //document.getElementById('open-or-join').disabled = false;
+    };
+
+    var audioPreview = document.getElementById('audio-preview');
+
+    connection.onstream = function(event) {
+    if (connection.isInitiator && event.type !== 'local') {
+        return;
+    }
+
+    connection.isUpperUserLeft = false;
+    audioPreview.srcObject = event.stream;
+    audioPreview.play();
+
+    audioPreview.userid = event.userid;
+
+    if (event.type === 'local') {
+        audioPreview.muted = true;
+    }
+
+    if (connection.isInitiator == false && event.type === 'remote') {
+        // he is merely relaying the media
+        connection.dontCaptureUserMedia = true;
+        connection.attachStreams = [event.stream];
+        connection.sdpConstraints.mandatory = {
+            OfferToReceiveAudio: false,
+            OfferToReceiveVideo: false
+        };
+
+        var socket = connection.getSocket();
+        socket.emit('can-relay-broadcast');
+
+        if (connection.DetectRTC.browser.name === 'Chrome') {
+            connection.getAllParticipants().forEach(function(p) {
+                if (p + '' != event.userid + '') {
+                    var peer = connection.peers[p].peer;
+                    peer.getLocalStreams().forEach(function(localStream) {
+                        peer.removeStream(localStream);
+                    });
+                    event.stream.getTracks().forEach(function(track) {
+                        peer.addTrack(track, event.stream);
+                    });
+                    connection.dontAttachStream = true;
+                    connection.renegotiate(p);
+                    connection.dontAttachStream = false;
+                }
+            });
+        }
+
+        if (connection.DetectRTC.browser.name === 'Firefox') {
+            // Firefox is NOT supporting removeStream method
+            // that's why using alternative hack.
+            // NOTE: Firefox seems unable to replace-tracks of the remote-media-stream
+            // need to ask all deeper nodes to rejoin
+            connection.getAllParticipants().forEach(function(p) {
+                if (p + '' != event.userid + '') {
+                    connection.replaceTrack(event.stream, p);
+                }
+            });
+        }
+
+        // Firefox seems UN_ABLE to record remote MediaStream
+        // WebAudio solution merely records audio
+        // so recording is skipped for Firefox.
+        if (connection.DetectRTC.browser.name === 'Chrome') {
+            repeatedlyRecordStream(event.stream);
+        }
+    }
+    };
+
+    // ask node.js server to look for a broadcast
+    // if broadcast is available, simply join it. i.e. "join-broadcaster" event should be emitted.
+    // if broadcast is absent, simply create it. i.e. "start-broadcasting" event should be fired.
+
+    function connectRtc() {
+    var broadcastId = <%= @channel_frequency %>
+    // var broadcastId = document.getElementById('broadcast-id').value;
+    // if (broadcastId.replace(/^\s+|\s+$/g, '').length <= 0) {
+    //     alert('Please enter broadcast-id');
+    //     document.getElementById('broadcast-id').focus();
+    //     return;
+    // }
+
+
+
+
+
+    //document.getElementById('open-or-join').disabled = true;
+    // Here is starting point to open session
+    connection.session = {
+        audio: true,
+        video: false,
+        oneway: true
+    };
+
+    var socket = connection.getSocket();
+
+    socket.emit('check-broadcast-presence', broadcastId, function(isBroadcastExists) {
+        if (!isBroadcastExists) {
+            // the first person (i.e. real-broadcaster) MUST set his user-id
+            connection.userid = broadcastId;
+        }
+
+        console.log('check-broadcast-presence', broadcastId, isBroadcastExists);
+
+        socket.emit('join-broadcast', {
+            broadcastId: broadcastId,
+            userid: connection.userid,
+            typeOfStreams: connection.session
+        });
+    });
+    // This is end
+
+        $('#audio-preview').show();
+
+    };
+    //document.getElementById('open-or-join').onclick = connectRtc;
+    connection.onstreamended = function() {};
+
+    connection.onleave = function(event) {
+    if (event.userid !== audioPreview.userid) return;
+
+    var socket = connection.getSocket();
+    socket.emit('can-not-relay-broadcast');
+
+    connection.isUpperUserLeft = true;
+
+    if (allRecordedBlobs.length) {
+        // playing lats recorded blob
+        var lastBlob = allRecordedBlobs[allRecordedBlobs.length - 1];
+        audioPreview.src = URL.createObjectURL(lastBlob);
+        audioPreview.play();
+        allRecordedBlobs = [];
+    } else if (connection.currentRecorder) {
+        var recorder = connection.currentRecorder;
+        connection.currentRecorder = null;
+        recorder.stopRecording(function() {
+            if (!connection.isUpperUserLeft) return;
+
+            audioPreview.src = URL.createObjectURL(recorder.getBlob());
+            audioPreview.play();
+        });
+    }
+
+    if (connection.currentRecorder) {
+        connection.currentRecorder.stopRecording();
+        connection.currentRecorder = null;
+    }
+    };
+
+    var allRecordedBlobs = [];
+
+    function repeatedlyRecordStream(stream) {
+    if (!enableRecordings) {
+        return;
+    }
+
+    connection.currentRecorder = RecordRTC(stream, {
+        type: 'audio'
+    });
+
+    connection.currentRecorder.startRecording();
+
+    setTimeout(function() {
+        if (connection.isUpperUserLeft || !connection.currentRecorder) {
+            return;
+        }
+
+        connection.currentRecorder.stopRecording(function() {
+            allRecordedBlobs.push(connection.currentRecorder.getBlob());
+
+            if (connection.isUpperUserLeft) {
+                return;
+            }
+
+            connection.currentRecorder = null;
+            repeatedlyRecordStream(stream);
+        });
+    }, 30 * 1000); // 30-seconds
+    };
+
+    function disableInputButtons() {
+    document.getElementById('open-or-join').disabled = true;
+    // document.getElementById('broadcast-id').disabled = true;
+    }
+
+    // ......................................................
+    // ......................Handling broadcast-id................
+    // ......................................................
+
+    // function showRoomURL(broadcastId) {
+    //   var roomHashURL = '#' + broadcastId;
+    //   var roomQueryStringURL = '?broadcastId=' + broadcastId;
+    //
+    //   var html = '<h2>Unique URL for your room:</h2><br>';
+    //
+    //   html += 'Hash URL: <a href="' + roomHashURL + '" target="_blank">' + roomHashURL + '</a>';
+    //   html += '<br>';
+    //   html += 'QueryString URL: <a href="' + roomQueryStringURL + '" target="_blank">' + roomQueryStringURL + '</a>';
+    //
+    //   var roomURLsDiv = document.getElementById('room-urls');
+    //   roomURLsDiv.innerHTML = html;
+    //
+    //   roomURLsDiv.style.display = 'block';
+    // }
+    // self-invoking
+    (function() {
+    var params = {},
+        r = /([^&=]+)=?([^&]*)/g;
+
+    function d(s) {
+        return decodeURIComponent(s.replace(/\+/g, ' '));
+    }
+    var match, search = window.location.search;
+    while (match = r.exec(search.substring(1)))
+        params[d(match[1])] = d(match[2]);
+    window.params = params;
+    })();
+
+    var broadcastId = '';
+    if (localStorage.getItem(connection.socketMessageEvent)) {
+    broadcastId = localStorage.getItem(connection.socketMessageEvent);
+    } else {
+    broadcastId = connection.token();
+    }
+    // document.getElementById('broadcast-id').value = broadcastId;
+    // document.getElementById('broadcast-id').onkeyup = function() {
+    //   localStorage.setItem(connection.socketMessageEvent, this.value);
+    // };
+
+    var hashString = location.hash.replace('#', '');
+    if (hashString.length && hashString.indexOf('comment-') == 0) {
+    hashString = '';
+    }
+
+    var broadcastId = params.broadcastId;
+    if (!broadcastId && hashString.length) {
+    broadcastId = hashString;
+    }
+
+    if (broadcastId && broadcastId.length) {
+    // document.getElementById('broadcast-id').value = broadcastId;
+    localStorage.setItem(connection.socketMessageEvent, broadcastId);
+
+    // auto-join-room
+    (function reCheckRoomPresence() {
+        connection.checkPresence(broadcastId, function(isRoomExists) {
+            if (isRoomExists) {
+                document.getElementById('open-or-join').onclick();
+                return;
+            }
+
+            setTimeout(reCheckRoomPresence, 5000);
+        });
+    })();
+
+    disableInputButtons();
+    }
+
+// below section detects how many users are viewing your broadcast
+
+    connection.onNumberOfBroadcastViewersUpdated = function(event) {
+        if (!connection.isInitiator) return;
+
+        document.getElementById('broadcast-viewers-counter').innerHTML = '<i class="fa fa-headphones fa-sm align-baseline"></i>&nbsp;&nbsp;현재 접속 청취자 수 : <b>' + event.numberOfBroadcastViewers + '</b>';
+        if(max_audience >= event.numberOfBroadcastViewers) return;
+        max_audience = event.numberOfBroadcastViewers;
+        $.ajax({
+            url: '/diaries/maxupdate',
+            type: 'POST',
+            data: {"max_audience" : max_audience,
+                authenticity_token: $('[name="csrf-token"]').attr('content')
+                },
+            dataType: 'script'
+        });
+    };
+
+</script>
+
+<script src="https://cdn.webrtc-experiment.com/common.js"></script>
+
+   <%if current_user.nil? or Channel.find_by(frequency: @channel_frequency).user_id != current_user.id %>
+        <% if Channel.find_by(frequency: @channel_frequency).onair == 1 %>
+            <script>
+                $(window).load(function(){
+                    $('#audio-preview').hide();
+                    function page_reload(data) {
+                        location.reload();
+                    }
+
+                    var pusher = new Pusher("<%=ENV['PUSHER_KEY']%>", {
+                        cluster: "<%=ENV['PUSHER_CLUSTER']%>",
+                        encrypted: true
+                    });
+
+                    var channel = pusher.subscribe("broadcast-<%= Channel.find_by(frequency: @channel_frequency).id %>");
+
+                    channel.bind('onair', function(data) {
+                        page_reload(data);
+                    });
+
+                    channel.bind('offair', function(data) {
+                        page_reload(data);
+                    });
+                    connectRtc();
+                });
+            </script>
+        <%else%>
+            <script>
+                $(window).load(function(){
+                    $('#audio-preview').hide();
+                    function page_reload(data) {
+                        location.reload();
+                    }
+
+                    var pusher = new Pusher("<%=ENV['PUSHER_KEY']%>", {
+                        cluster: "<%=ENV['PUSHER_CLUSTER']%>",
+                        encrypted: true
+                    });
+
+                    var channel = pusher.subscribe("broadcast-<%= Channel.find_by(frequency: @channel_frequency).id %>");
+
+                    channel.bind('onair', function(data) {
+                        page_reload(data);
+                    });
+
+                    channel.bind('offair', function(data) {
+                        page_reload(data);
+                    });
+                });
+            </script>
+        <%end%>
+    <% else %>
+    <script>
+        $(window).load(function(){
+            $('#audio-preview').hide();
+            var pusher = new Pusher("<%=ENV['PUSHER_KEY']%>", {
+                cluster: "<%=ENV['PUSHER_CLUSTER']%>",
+                encrypted: true
+            });
+
+            var channel = pusher.subscribe('broadcast_owner');
+            channel.bind('create_story', function(data) {
+                $('#stories').prepend(`
+                <i class="fa fa-envelope faa-shake animated mb-2"></i>
+                <h6>보내는 사람: ${data.email}</h6>
+                <h6> ${data.content} </h6>
+                <p> ${data.date} </p>
+                <hr/>`);
+            });
+
+
+
+
+            document.getElementById('open-or-join').onclick = connectRtc;
+        });
+    </script>
+<% end %>

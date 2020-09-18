@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user_id: 
+  onair: 1
+  frequency: 1.5
+  category: 1
+  title: MyString
+
+two:
+  user_id: 
+  onair: 1
+  frequency: 1.5
+  category: 1
+  title: MyString

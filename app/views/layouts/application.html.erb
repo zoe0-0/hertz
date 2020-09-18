@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <title>Hertz</title>
+  <%= stylesheet_link_tag    'application', media: 'all' %>
+  <%= javascript_include_tag 'application' %>
+  <%= csrf_meta_tags %>
+
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Sunflower:300" rel="stylesheet">
+  <link rel="stylesheet" href="font-awesome-animation.min.css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.1/css/all.css" integrity="sha384-O8whS3fhG2OnA5Kas0Y9l3cfpmYjapjI0E4theH4iuMD+pLhbf6JI0jIMfYcK3yZ" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css" integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
+  <link href="https://fonts.googleapis.com/css?family=Gaegu" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Marvel" rel="stylesheet">
+  <script src="https://js.pusher.com/4.1/pusher.min.js"></script>
+
+
+  <style>
+
+     body{
+       background: #FFFDF1;
+       margin: 15px 2% 0px 2%;
+       min-width: 500px;
+     }
+
+     a{
+       text-decoration: none;
+       color: #363636;
+       margin-right: 10px;
+     }
+
+      .border-styles {
+
+         border-radius: 35px;
+         border: 1px solid grey ;
+         padding : 20px;
+      }
+
+      .left-box{
+        /* border-right: 0.5px dashed grey; */
+        padding: 10px 10px 10px 40px;
+      }
+
+      div#diary-card{
+        border-radius: 10px;
+        margin-bottom: 30px;
+        padding-bottom:30px;
+        /*background: rgba(255, 255, 0, 0.4);*/
+      }
+
+      div#diary-card>p{
+        border-bottom: 0.5px dashed grey;
+        padding: 10px;
+        margin: 0px;
+      }
+
+      div#diary-card>h5{
+        border-bottom: 0.5px dashed grey;
+        padding: 10px;
+        margin: 0px;
+      }
+
+      div#diary-card> h5#index{
+        border-bottom: 0px;
+        padding-bottom: 20px;
+      }
+
+
+
+
+      #radio{
+        border-radius: 30px;
+        border: 2px solid grey ;
+        padding : 20px;
+        margin-right: 5%;
+        margin-left: 5%;
+        min-height:555px;
+      }
+
+
+      footer{
+        margin: 45px 0px 0px 0px;
+        height: 50px;
+        font-size: 12px;
+        color: #d8d7d2;
+      }
+
+      footer p{
+        padding-right: 5%;
+      }
+
+      nav#nav{
+        margin-right: 4%;
+        margin-left: 4%;
+        margin-bottom: 20px;
+      }
+
+
+      .pre-scrollable{
+        border-radius: 10px;
+        background: rgba(250, 242, 223, 0.4);
+        /* background: rgba(255, 255, 255, 0.4); */
+        min-height: 400px;
+        padding:30px 50px 50px 50px;
+      }
+
+      .inner{
+        background: rgba(250, 242, 223, 0.5);
+        border-radius: 33px;
+        width: 85%;
+        min-height: 400px;
+        margin: auto;
+        text-align: center;
+      }
+
+
+     #story-box{
+       background: rgba(250, 242, 223, 0.4);
+       /* background: rgba(250, 242, 223, 0.5); */
+       padding: 30px;
+       min-height: 400px;
+     }
+
+  </style>
+
+</head>
+<body>
+
+  <!--Navbar-->
+  <nav id="nav" class="navbar navbar-light lighten-4">
+
+  <span style="width:120px">
+    <button class="navbar-toggler toggler-example" type="button" data-toggle="collapse" data-target="#navbarSupportedContent1" aria-controls="navbarSupportedContent1"
+        aria-expanded="false" aria-label="Toggle navigation"><span class="dark-blue-text"><i class="fa fa-bars fa-1x"></i></span></button>
+  </span>
+
+
+    <%= link_to root_path do %>
+       <%= image_tag("logo.png", :alt => "logo", :width => 120, class: "") %>
+    <% end %>
+
+
+
+       <ul class="nav">
+         <% unless user_signed_in?%>
+             <li class="nav-item text-right" style="width:120px">
+               <%= link_to 'Login', '/users/sign_in' %>
+             </li>
+         <% else %>
+             <li class="nav-item text-right" style="width:120px">
+               <%= link_to 'OnAir', '/channels/new' %>
+               <%= link_to 'Logout', '/users/sign_out',method: :delete  %>
+             </li>
+         <%end%>
+       </ul>
+
+
+
+      <div class="collapse navbar-collapse" id="navbarSupportedContent1">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item mb-2">
+              <%= link_to 'Home', '/'%>
+            </li>
+            <% if user_signed_in?%>
+               <li class="nav-item active mb-2">
+                 <%= link_to 'MyPage', '/users/edit'%>
+               </li>
+            <%end%>
+            <li class="nav-item">
+              <%= link_to 'TimeTable', '/timetables'%>
+            </li>
+          </ul>
+      </div>
+
+  </nav>
+
+  <div class="row col-10 mx-auto" >
+    <%= image_tag("radio_button.png", :alt => "logo", :width => 110, :height=> 35, class: "ml-auto") %>
+  </div>
+
+  <div id="radio" class="row">
+     <%= yield %>
+  </div>
+
+
+
+
+  <footer class="text-muted text-right">
+    <hr/>
+    <p class="mb-0">By DurianSalad</p>
+  </footer>
+  <!-- Latest compiled and minified JavaScript -->
+  <script defer src="https://use.fontawesome.com/releases/v5.1.1/js/all.js" integrity="sha384-BtvRZcyfv4r0x/phJt9Y9HhnN5ur1Z+kZbKVgzVBAlQZX4jvAuImlIz+bG7TS00a" crossorigin="anonymous"></script>
+  <!-- <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script> -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/js/bootstrap.min.js" integrity="sha384-o+RDsa0aLu++PJvFqy8fFScvbHFLtbvScb8AjopnFD+iEQ7wo/CG0xlczd+2O/em" crossorigin="anonymous"></script>
+</body>
+</html>
+

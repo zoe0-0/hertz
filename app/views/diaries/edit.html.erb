@@ -1,0 +1,11 @@
+<div class="align-self-center mx-auto col-5">
+<p>
+  * 채널 다이어리를 작성/수정
+</p>
+
+<%= form_for @diary, method: "put", class: "border border-light" do |f| %>
+    <%= f.text_field :title,  required: true, class: "form-control mb-3", placeholder: "오늘의 방송 주제" %>
+    <%= f.text_field :content, required: true, class: "form-control mb-4",  placeholder: "오늘의 방송 내용" %>
+   <%= f.submit "Save", class: "btn btn-outline-warning btn-rounded btn-block z-depth-0 my-2 waves-effect" %>
+<% end %>
+</div>

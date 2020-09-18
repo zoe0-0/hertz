@@ -1,0 +1,13 @@
+<div class="mx-auto align-self-center" style="width:30%;">
+<!--  주파수가 이미 사용 중이라면 이용 중임을 보여주어야 한다... ajax로 만들어
+      주파수 input 태그가 변경 될 때 마다 서버와 통신.. 사용 중임을 나타내자
+ -->
+
+<br/>
+<%= simple_form_for @channel, method: "POST", url: {action: "create"}, class: "text-center border border-light p-5"  do |f| %>
+<%= f.number_field(:frequency, {min: 88.5, max: 108.0, step: 0.002,  class: "form-control mb-3", placeholder: "주파수"} ) %>
+<%= f.text_field :title ,  class: "form-control mb-3" , placeholder: "채널 이름"%>
+  <%= f.submit "내 채널 생성" , class: "btn btn-outline-warning btn-rounded btn-block z-depth-0 my-2 waves-effect"%>
+<% end %>
+
+</div>

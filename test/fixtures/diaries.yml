@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  max_audience: 1
+  content: MyText
+  finished_at: 2018-07-11 17:17:23
+  channel_id: 
+  title: MyString
+
+two:
+  max_audience: 1
+  content: MyText
+  finished_at: 2018-07-11 17:17:23
+  channel_id: 
+  title: MyString
